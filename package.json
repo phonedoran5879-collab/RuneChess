@@ -1,15 +1,8 @@
 {
   "name": "rune-chess-server",
-  "version": "2.0.0",
-  "description": "룬 진형 체스 — 정적 파일 + WebSocket 온라인 대전 서버",
+  "version": "2.1.0",
+  "description": "룬 진형 체스 — 외부 라이브러리 없는 게임 + 온라인 대전 서버",
   "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "engines": {
-    "node": ">=18"
-  },
-  "dependencies": {
-    "ws": "^8.18.0"
-  }
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=16" }
 }
