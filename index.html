@@ -18,6 +18,10 @@ input{cursor:text}
 .spr.big{width:72px;height:72px}.spr.port{width:80px;height:80px;border:1px solid var(--line);background:#0b0d18;flex:none}
 .audioRow{display:flex;gap:6px}
 .audioRow button{font-size:13px;padding:5px 9px}.audioRow .off{opacity:.5}
+.volRow{display:flex;gap:12px;align-items:center;justify-content:center;font-family:"Do Hyeon";font-size:14px;color:var(--dim)}
+.volRow label{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.btns .volRow{justify-content:space-between;gap:6px}.btns .volRow label{flex:1;min-width:0}.btns .volRow input{width:auto;flex:1;min-width:40px}
+.volRow input{width:90px;accent-color:var(--gold);cursor:pointer}.volRow .vv{min-width:28px;color:var(--gold);font-size:12px}
 
 /* ---------- 로비 ---------- */
 #lobby{position:fixed;inset:0;flex-direction:column;align-items:center;justify-content:center;gap:18px;
@@ -171,13 +175,14 @@ summary{padding:7px 10px;cursor:pointer;font-family:"Do Hyeon";font-size:16px;co
     <button id="btnLocal">👥 2인 대전 (한 화면)</button>
     <button id="btnTree">📜 테크트리 도감</button>
     <div class="audioRow" style="justify-content:center"><button class="bgmBtn"></button><button class="sfxBtn"></button></div>
+    <div class="volRow"><label>♫ BGM <input type="range" class="bgmVol" min="0" max="100"><span class="vv"></span></label><label>🔊 효과음 <input type="range" class="sfxVol" min="0" max="100"><span class="vv"></span></label></div>
   </div>
   <div class="lobbyFoot">화면을 한 번 클릭하면 음악이 재생됩니다</div>
 </div>
 
 <!-- 군단 편성 -->
 <div id="draft">
-  <div class="dtop"><button id="draftBack">← 로비</button><div id="draftTitle"></div><div id="viewTabs"></div><div class="audioRow"><button class="bgmBtn"></button><button class="sfxBtn"></button></div></div>
+  <div class="dtop"><button id="draftBack">← 로비</button><div id="draftTitle"></div><div id="viewTabs"></div><div class="audioRow"><button class="bgmBtn"></button><button class="sfxBtn"></button></div><div class="volRow"><label>♫ BGM <input type="range" class="bgmVol" min="0" max="100"><span class="vv"></span></label><label>🔊 효과음 <input type="range" class="sfxVol" min="0" max="100"><span class="vv"></span></label></div></div>
   <div class="dbody">
     <div id="presetCol"><h3>추천 전략</h3><div id="presetList" style="display:contents"></div></div>
     <div id="catalog"></div>
@@ -201,6 +206,7 @@ summary{padding:7px 10px;cursor:pointer;font-family:"Do Hyeon";font-size:16px;co
       <button id="thrBtn">위협 범위 (T)</button>
       <button id="quitBtn">나가기</button>
       <div class="audioRow" style="grid-column:span 2"><button class="bgmBtn" style="flex:1"></button><button class="sfxBtn" style="flex:1"></button></div>
+      <div style="grid-column:span 2"><div class="volRow"><label>♫ BGM <input type="range" class="bgmVol" min="0" max="100"><span class="vv"></span></label><label>🔊 효과음 <input type="range" class="sfxVol" min="0" max="100"><span class="vv"></span></label></div></div>
     </div>
     <div id="card" class="card empty"></div>
     <details open><summary>규칙</summary><div class="rules">
@@ -259,10 +265,10 @@ const SCHOOLS = [
 
 const DEFS = {
   // 룬
-  guard:{ name:'룬 수호병', school:'rune', value:1, cost:1, role:'front', tag:'기본',
+  guard:{ name:'포네도란', school:'rune', value:1, cost:1, role:'front', tag:'기본',
     move:[R(ORTH,1)], cap:[R(DIAG,1)], moveTxt:'상하좌우 1칸 이동 · 대각선 1칸 공격',
-    fx:['4기가 빈칸을 상하좌우로 감싸면 「룬 마름모」 → 룬 골렘 소환'] },
-  golem:{ name:'룬 골렘', school:'rune', value:6, role:'front', tag:'소환', shield:2,
+    fx:['4기가 빈칸을 상하좌우로 감싸면 「룬 마름모」 → 머슬도란 소환'] },
+  golem:{ name:'머슬도란', school:'rune', value:6, role:'front', tag:'소환', shield:2,
     move:[R(O8,1)], cap:'same', moveTxt:'8방향 1칸 (이동·공격)', fx:['실드 2로 소환','등장 시 인접한 적 전원 기절'] },
   spire:{ name:'공명탑', school:'rune', value:2, cost:2, role:'back', tag:'구조물', immobile:true, abil:['phase'],
     move:[], cap:[], moveTxt:'걷지 못함 (위상 이동으로만 이동)', fx:['같은 줄·열 3칸 안에 아군 2기 이상 → 「공명 회로」: 연결된 기물 사거리 +1'] },
@@ -320,9 +326,9 @@ const DEFS = {
     move:[R(O8,1)], cap:'same', moveTxt:'8방향 1칸', fx:['독침: 3턴 뒤 쓰러지는 맹독 (정화로 해제)'] },
   // 사령
   warlock:{ name:'사령술사', school:'death', value:4, cost:4, role:'back', tag:'기본', abil:['raise'],
-    move:[R(DIAG,2)], cap:[], moveTxt:'대각선 2칸 · 공격 불가', fx:['기상: 무덤에서 해골 병사를 일으킴'] },
-  skeleton:{ name:'해골 병사', school:'death', value:1, role:'front', tag:'소환',
-    move:[R(O8,1)], cap:'same', moveTxt:'8방향 1칸', fx:['사령술사가 일으킨 망자'] },
+    move:[R(DIAG,2)], cap:[], moveTxt:'대각선 2칸 · 공격 불가', fx:['기상: 무덤에서 겔드워기를 일으킴'] },
+  skeleton:{ name:'겔드워기', school:'death', value:1, role:'front', tag:'소환',
+    move:[R(O8,1)], cap:'same', moveTxt:'8방향 1칸', fx:['사령술사가 무덤에서 일으킨 망자'] },
   // 야생
   wolf:{ name:'늑대', school:'wild', value:2, cost:2, role:'front', tag:'기본', pack:true,
     move:[R(O8,1)], cap:'same', moveTxt:'8방향 1칸', fx:['무리: 2칸 안에 다른 늑대가 있으면 사거리 +1','3기가 뭉치면 「늑대 울음」'] },
@@ -339,7 +345,7 @@ const DEFS = {
   turret:{ name:'자동 포탑', school:'tech', value:3, role:'back', tag:'구조물', immobile:true, autofire:true,
     move:[], cap:[], moveTxt:'움직이지 못함', fx:['내 턴이 끝날 때 상하좌우 4칸 안의 적 1기 자동 사격'] },
   // 용
-  egg:{ name:'용의 알', school:'dragon', value:3, cost:5, role:'back', tag:'기본', immobile:true, shield:1, grow:{to:'wyrmling',turns:4},
+  egg:{ name:'몽실 개도라이의 알', school:'dragon', value:3, cost:5, role:'back', tag:'기본', immobile:true, shield:1, grow:{to:'wyrmling',turns:4},
     move:[], cap:[], moveTxt:'움직이지 못함', fx:['4턴 뒤 부화'] },
   wyrmling:{ name:'새끼 용', school:'dragon', value:5, role:'front', tag:'성장',
     move:[R(O8,2)], cap:'same', evolve:[{to:'dragon',cost:6}], moveTxt:'8방향 2칸', fx:['마나 6으로 고룡 진화'] },
@@ -403,7 +409,7 @@ const ABIL = {
   root:{ name:'속박', cost:2, desc:'3칸 안 적 2턴간 이동 불가',
     targets:(s,p)=>enemiesIn(s,p,3,q=>q.root<2&&!DEFS[q.type].immobile).map(q=>({x:q.x,y:q.y,tid:q.id})),
     exec:(s,p,a,ev)=>{ const t=s.byId.get(a.tid); addStatus(s,t,'root',2); ev.push({k:'root',fx:p.x,fy:p.y,x:t.x,y:t.y,o:p.owner}); } },
-  raise:{ name:'기상', cost:2, desc:'3칸 안 무덤에서 해골 병사 소환',
+  raise:{ name:'기상', cost:2, desc:'3칸 안 무덤에서 겔드워기 소환',
     targets:(s,p)=>s.graves.filter(g=>cheb(p.x,p.y,g.x,g.y)<=3 && !s.occ[g.y*W+g.x]).map(g=>({x:g.x,y:g.y})),
     exec:(s,p,a,ev)=>{ const gi=s.graves.findIndex(g=>g.x===a.x&&g.y===a.y); s.graves.splice(gi,1);
       const n=mkPiece(s,'skeleton',p.owner,a.x,a.y); n.acted=9; s.pieces.push(n);
@@ -662,7 +668,7 @@ function resolveFormations(s,ev,actorId){
         reindex(s);
         let n=0;
         for (const [dx,dy] of O8){ const q=at(s,x+dx,y+dy); if (q&&q.owner!==o){ addStatus(s,q,'stun',1); n++; } }
-        ev.push({k:'summon',x,y,o,name:'룬 골렘',form:'룬 마름모',from:ns.map(q=>[q.x,q.y]),n});
+        ev.push({k:'summon',x,y,o,name:DEFS.golem.name,form:'룬 마름모',from:ns.map(q=>[q.x,q.y]),n});
         fired=true; break outer;
       }
     }
@@ -1018,12 +1024,12 @@ const BUDGET = 36, MAX_PIECES = 18;
 const DRAFTABLE = Object.keys(DEFS).filter(k=>DEFS[k].cost);
 function armyCost(army){ return army.reduce((s,t)=>s+DEFS[t].cost,0); }
 const PRESETS = [
-  { name:'룬 소환진', desc:'수호병 물량으로 골렘을 연달아 소환', army:['guard','guard','guard','guard','guard','guard','guard','guard','spire','priest','archer','archer','archer','lancer','lancer','pike','pike'] },
+  { name:'룬 소환진', desc:'포네도란 물량으로 머슬도란을 연달아 소환', army:['guard','guard','guard','guard','guard','guard','guard','guard','spire','priest','archer','archer','archer','lancer','lancer','pike','pike'] },
   { name:'검술 돌격', desc:'기사 돌진과 쌍검 영웅 융합으로 밀어붙이기', army:['twin','twin','lancer','lancer','pike','pike','shieldbearer','shieldbearer','shade','priest','guard','guard','guard','guard','wolf'] },
   { name:'궁술 포격', desc:'방패벽 뒤에서 투석기·포탑·폭풍 화살', army:['archer','archer','archer','catapult','shieldbearer','shieldbearer','shieldbearer','engineer','guard','guard','pike','spire'] },
   { name:'비전 통제', desc:'세 갈래 마법사 진화와 빙결로 행동 불능 승리', army:['apprentice','apprentice','apprentice','priest','poisoner','shieldbearer','guard','guard','guard','guard','spire','pike','pike','lancer'] },
   { name:'야생의 숲', desc:'늑대 무리와 고대 나무 요새', army:['wolf','wolf','wolf','wolf','druid','sapling','sapling','sapling','guard','guard','guard','guard','archer','poisoner','pike','pike','priest'] },
-  { name:'망자와 용', desc:'해골을 일으키며 고룡이 깨어날 때까지 버티기', army:['egg','warlock','poisoner','shade','guard','guard','guard','guard','guard','guard','shieldbearer','archer','priest','pike','pike','spire'] },
+  { name:'망자와 용', desc:'겔드워기를 일으키며 고룡이 깨어날 때까지 버티기', army:['egg','warlock','poisoner','shade','guard','guard','guard','guard','guard','guard','shieldbearer','archer','priest','pike','pike','spire'] },
 ];
 
 </script>
@@ -1033,39 +1039,95 @@ const PRESETS = [
 // t 뼈 o 나무 O 어두운 나무 n 초록 N 어두운 초록 p 보라 c 하늘 f 불 y 노랑 r 빨강 R 어두운 빨강
 const SPR = {
 guard:[
-"..............w.",
-"......mmm.....m.",
-".....mMMMm....m.",
-".....mkmkm....o.",
-".....msssm....o.",
-"......sss.....o.",
-"..mmm.aaaa...so.",
-".mllmaaaaaaass..",
-".mlgmaaaaaa..o..",
-".mllmaAaaa...o..",
-".mllmaaaaa...o..",
-"..mm.aAAAa...o..",
-"......a..a......",
-"......a..a......",
-".....MM..MM.....",
-"................"],
+"................................",
+"................................",
+"................................",
+"................................",
+"................................",
+"................................",
+".................2576...........",
+"...............04675561.........",
+"..........54442222222262........",
+".........5433222222223275.......",
+"........5436772222222333446.....",
+"........46000072267722222346....",
+".......6307100726000772233346...",
+"......16077701270000007233366...",
+"....6657077002200077000224556...",
+"...455370000525000770002345662..",
+"...554370006230000000073356662..",
+"..5542227722220000000034466753..",
+"..5522222222227000000544576556..",
+"..6433222222222770453455665467..",
+".143322226222222222345566655551.",
+".444433227222262223456656565457.",
+".4433332227777222245555455455647",
+".5433222232323222455565554445554",
+"65333322332233333454456545455444",
+"55543333333333223333443434344444",
+"75654443434333323233323333343446",
+"7765555333233323333222334444444.",
+".765654533333443333333344444445.",
+"..76655444545444554466645444551.",
+"......2115556455544555554546....",
+"............3445556544566......."],
 golem:[
-"................",
-"....MMMMMMMM....",
-"...MmmmmmmmmM...",
-"...MmlMmmMlmM...",
-"...MmmmmmmmmM...",
-"..MMMmMMMMmMMM..",
-".MmmmMmllmMmmmM.",
-".MmmmMmlamMmmmM.",
-".MmmMMmllmMMmmM.",
-".MMM.MmmmmM.MMM.",
-".mlm.MmmmmM.mlm.",
-".....MmMMmM.....",
-"....MmmM.MmmM...",
-"....MmmM.MmmM...",
-"...MMMMM.MMMMM..",
-"................"],
+"........................................................",
+"........................................................",
+"........................................................",
+"........................................................",
+"........................................................",
+"........................................................",
+"........................................................",
+"........................................................",
+"........................................................",
+"........................................................",
+"........................................................",
+"........................................................",
+"........................................................",
+"........................................................",
+"........................................................",
+"........................................................",
+"........................................................",
+"........................................................",
+"............BBB1B.....................B1BBB.............",
+".........BBB21323B...................B32312BBB..........",
+"........B222228234B.................B232722222B.........",
+".......B2b44628235B.................B63272644b2B........",
+"......B22788b3747B..................Bb7473b98722B.......",
+".....B22479bbbB53B...................B35BBbB97422B......",
+"....B22267b...bbb.....................bBb...b66222B.....",
+"...B22245b.................bb................b54222B....",
+"..B222247B................B55b...............B642232B...",
+".B2241273b.............874222338.............B3621432B..",
+".b2522423b............1007266224.............B3242242b..",
+"B68222422B............06071006239............B22422276B.",
+"B38224224BBBBB.......b0B070B07268b.......BBBBB42242272B.",
+"738635248B2112B.BBBB.600170B07468B.BBBB.B2112B842436727B",
+"728884388222223B2112B366220014787bB2112B322222b83488838B",
+"B636668163322237322233B22233368676322236322233b1766636b.",
+".B6322223733333B2223392BBB2466667633222B3333373222236b..",
+"..B743222b75555955833bB444255666bB33855955557b222347b...",
+"...B75333397879976211113b9555bb3111125798777b433357b....",
+"....B88885287bb88422222113b7b41122222478bB8b258888b.....",
+".....B7433335788B525222222494222222544B8885333357b......",
+"......b74335789BB732244222384222442238Bb98753357B.......",
+".......b77777bb8B842221116696611122248B8bb77777B........",
+"........BbBBBB758b642222216b612222246b857BbbBBB.........",
+".............B758b85822225b5b52222858b857B..............",
+".............B7587b866666b555b666767b7857B..............",
+".............B75858BBbBB3222223BBBBB76857B..............",
+".............b7557b75213212621241257b7557B..............",
+"..............B758b48226333733362284b857b...............",
+"...............b57962669989688896627975B................",
+"................B685824421262124428486b.................",
+".................B9759973228324699478b..................",
+"..................b88bb999979999bb88b...................",
+"...................B426521272124624B....................",
+"...................B524b4349444b425B....................",
+"...................b774bbbb9bbbb577b....................",
+"....................777b4447444b777.....................",
+"....................777777777777778....................."],
 spire:[
 ".......cc.......",
 "......cwwc......",
@@ -1424,22 +1486,70 @@ warlock:[
 "...kkkkkkkkk....",
 "................"],
 skeleton:[
-"................",
-".....tttt.......",
-"....tttttt......",
-"....tkttkt......",
-"....tttttt......",
-".....tkkt.......",
-"......tt....m...",
-"....tttttt.m....",
-"...t.tkkt.tm....",
-"...t.tttt.......",
-"...a.tkkt.......",
-".....aaaa.......",
-".....t..t.......",
-".....t..t.......",
-"....tt..tt......",
-"................"],
+"................................................................",
+"................................................................",
+"................................................................",
+"................................................................",
+"................................................................",
+"................................................................",
+"................................................................",
+"................................................................",
+"................................................................",
+"................................................................",
+"................................................................",
+"................................................................",
+"................................................................",
+".............WW...................WW............................",
+".............WWW.................WWWW...........................",
+"...........WWWWWWWWWWW..W.......W.WWWW..........................",
+"...........WWWWWWWWWWWWWWW.......WWWWWW.........................",
+"...........WWWWWWWWWWWWWWWW.....WWWWWW..........................",
+"..............WWWWWWWWWWWWWxx..WWWW.............................",
+"...............WWWWWWWWWWWWWW.WWWW..............................",
+"...............WWWWWWWWWWWWWWWWWW...............................",
+"..........qYYqxWWWWWWWWWWWWWWWWW................................",
+"........YqqqqYqWWWWWWWWWWWWWWWW.................................",
+"......YYYqqqqYWWWWWWWWWWWWWWWWWW................................",
+"......qYYqqqqYWWWWWWWWWWWWWWWWWW................................",
+"......qYqqqqqYWWWxxWWWWWWWxxxWWW................................",
+"......YYqqqqqYWxxzzxxWWWWxzzzxWW................................",
+".......YYqqqqYWxzzzzxWWWxzzzzzxWW...............................",
+"......YYqYqqqYWxzzzzxWWWxzzzzzxWWqq.............................",
+"......YYqqYYYYYxzzzzxWWWxzzzzzxWYqY.............................",
+"......YYqqYWWWxxzzzxxxxxxzzzzxxWqqq.............................",
+"......YYqqqWWWxxxxxWWxzxWxxxxWWYqqqq............................",
+"......YYqqYWWWW.WWWWWWxWWWWWWWWqqqqq............................",
+".......YYYWWWWYqxWWWWWWWWWWWWWYqqqqqY...........................",
+".......xWWWWxWYqxxxxxxxxxxxxxWYqqqqqY...........................",
+"........WWWWxYqqWWWxWxWxWxWxWWWYqqqqYq..........................",
+"........xWWWWYqqYWWxWxWxWxWxWWWYYqqqqq..........................",
+"........YYqqWYqqYWWxWxWxWxWxWWWWWYYqqq..........................",
+"........YqqqqYqqqWWxWxWxWxWxWqWWWWYqQYx.........................",
+".......xYqqqqqYqqqqq.....qqqqYWWWWYqQQY.........................",
+".......xqqqqqqYqqqqq.....qqqqYWWW.qqQQY.........................",
+".......WqqqqqqYqqqqq....qqqqqY....qqqQQY........................",
+".......YqqqqqqYqqqq.....YYqqqqY...qqqqQYY.......................",
+"......Yqqqqqqqqqqqq....YqqYqqqY...qqqqQQYY......................",
+"......qqqqqqqqqqqqq....YqqYqqqY...YqqqqQYYY.....................",
+".....YYqYqqqqqYqqqq....qqqqYqqY...qqqqqqYYQYY...................",
+"....YYqqqYqqqQYqqqY...YqqqYYqY.....qqqqqYYQQYYY.................",
+"....YqYqqqYqqYqYqqY...qqqqYq.......WqqqqqYqqQQYYqq..............",
+"...YYqqYqqYqYYqqqq....qYYqY.........qqqqqYqqqQQQqYYq............",
+"..YqYqqqYYYYqYqqqq....YqqYYq........YqqqqYYqqqqqqqqqq...........",
+".YqYqqqqqqY..YqqqqY...qqqqYq........qYqqqqYqqqqqqqqq............",
+".YqYqqqqqqY..qqqqqYq..YYqqqYq.........YqqqYqqqqqqQQq............",
+".qqYqqqqqY...qYqqqqqq..qqqqqY..........YqqYYqqqqqQQYYYYq........",
+".YYYqqqYY....YqqqqqqYY..qqYYq...........qYYYqqqqQQYqqqqqq.......",
+".YYqqYY......Yqqqqqqqq...Yq...............qYqqqqqqYqqqqqqq......",
+"..YYYq......YqqqqqqqqYq....................Yqqqqqqqqqqqqqqq.....",
+"............YqqqqqqYqq.......................WqqqYqqqqqqqqqq....",
+"............YqqqqqY............................qYYqqqqqqqqqqY...",
+"............YqqqqY...............................YqqqqqqqqqqqY..",
+"............qqqqq................................qqqqqqqqqqqqY..",
+".............qYY.................................qqqqqqqqqqqqY..",
+".................................................qqqqqqqqqqqqYY.",
+".................................................qqqqqqqqqqqqqq.",
+".................................................YqqqqqqqqqqqqqY"],
 wolf:[
 "................",
 "................",
@@ -1543,22 +1653,30 @@ turret:[
 "................",
 "................"],
 egg:[
-"................",
-"................",
-"................",
-"................",
-"......aaaa......",
-".....aalaaa.....",
-"....aalaagaa....",
-"....alaaaAaa....",
-"...aaagaAaaaa...",
-"...aaaaAaagaa...",
-"...agaaaAaaaa...",
-"....aaaaaaaa....",
-"....ooooooooo...",
-"...oOoOoOoOo....",
-"................",
-"................"],
+"........................",
+"........................",
+"..........JJJJ..........",
+".........JJJJJJ.........",
+"........JjJJJJJJ........",
+".......JwjjyJJJJJ.......",
+".......JwjjJJJJJJ.......",
+"......JJwjjJJJJJJJ......",
+"......JJjjjJJJJJJJ......",
+"......JJjjjJJJJJJJ......",
+".....JJJJjJyJJJJJJJ.....",
+".....JJJJJJJJJJJJJJ.....",
+".....JJJJJJJJJJyJJJ.....",
+".....JJJJJJJJJJJJJJ.....",
+".....JJJJJJJJJJJJJJ.....",
+"......JJJJJJJJJJJJ......",
+"......JJJJJJJJJJJJ......",
+"......JJJJJJJJJJJJ......",
+".......JJJJJJJyJJ.......",
+"...wwooooooooooooooww...",
+"..woooooooooooooooooow..",
+"..OoOoOoOoOoOoOoOoOoOoO.",
+"...OlaaalaaalaaalaaaoO..",
+"......oooooooooooo......"],
 wyrmling:[
 "................",
 "................",
@@ -1595,8 +1713,14 @@ dragon:[
 "................"],
 };
 const BASE_PAL = { s:'#f2c39b', h:'#6b4426', m:'#c3cad8', M:'#6f7891', g:'#ffcc3a', w:'#f4f6ff', k:'#1a1724',
-  t:'#ece4c8', o:'#9a6334', O:'#5e3a1d', n:'#62c35a', N:'#2f7d3a', p:'#8a58d6', c:'#7fe3ff', f:'#ff8a2a', y:'#ffe066', r:'#d84038', R:'#8a2424' };
+  t:'#ece4c8', o:'#9a6334', O:'#5e3a1d', n:'#62c35a', N:'#2f7d3a', p:'#8a58d6', c:'#7fe3ff', f:'#ff8a2a', y:'#ffe066', r:'#d84038', R:'#8a2424',
+  u:'#5b70c0', U:'#33407e', v:'#8fa6ec', j:'#ffd49a', J:'#ff9a3c', K:'#c25a18', q:'#cfefd8', Q:'#a6e0b6', z:'#d6d6de', T:'#bfb595', x:'#6a6b7c', W:'#f4f3ee', Y:'#8fc7a0' };
 const TEAM_PAL = [ { a:'#3d86ff', A:'#1f4aa8', l:'#9cc8ff' }, { a:'#ff4656', A:'#9a1c34', l:'#ffa3ab' } ];
+// 직접 만든 캐릭터 이미지 기반 스프라이트: 전용 팔레트 + 자동 명암 생략
+const SPR_PAL = {
+  guard:{"0": "#e9edec", "1": "#b4bcc0", "2": "#7990ba", "3": "#627aa2", "4": "#4c6484", "5": "#384c68", "6": "#22324b", "7": "#0c1221"},
+  golem:{"0": "#e1ebf6", "1": "#b8cae6", "2": "#6c85b9", "3": "#5b6fa7", "4": "#53649b", "5": "#4a598d", "6": "#3b4b78", "7": "#344369", "8": "#303d5f", "9": "#283451", "b": "#1f2a44", "B": "#1d283f"},
+};
 const OUTLINE = '#0b0a12';
 
 function hexToRgb(h){ const n=parseInt(h.slice(1),16); return [(n>>16)&255,(n>>8)&255,n&255]; }
@@ -1607,29 +1731,27 @@ const SPRITE_CACHE = {};
 function makeSprite(type, owner){
   const key=type+'|'+owner;
   if (SPRITE_CACHE[key]) return SPRITE_CACHE[key];
-  const rows=SPR[type]||SPR.guard, N=16;
-  const pal={...BASE_PAL, ...TEAM_PAL[owner]};
+  const rows=SPR[type]||SPR.guard, NH=rows.length, NW=Math.max(...rows.map(r=>r.length));
+  const custom=SPR_PAL[type], pal={...BASE_PAL, ...TEAM_PAL[owner], ...(custom||{})};
   const grid=[];
-  for (let y=0;y<N;y++){ grid.push([]); for (let x=0;x<N;x++){ const ch=(rows[y]||'')[x]||'.'; grid[y].push(ch==='.'||ch===' '?null:ch); } }
-  const filled=(x,y)=> x>=0&&y>=0&&x<N&&y<N && grid[y][x]!==null;
-  const c=document.createElement('canvas'); c.width=c.height=N+2;
+  for (let y=0;y<NH;y++){ grid.push([]); for (let x=0;x<NW;x++){ const ch=(rows[y]||'')[x]||'.'; grid[y].push(ch==='.'||ch===' '?null:ch); } }
+  const filled=(x,y)=> x>=0&&y>=0&&x<NW&&y<NH && grid[y][x]!==null;
+  const c=document.createElement('canvas'); c.width=NW+2; c.height=NH+2;
   const g=c.getContext('2d');
-  // 외곽선
   g.fillStyle=OUTLINE;
-  for (let y=-1;y<=N;y++) for (let x=-1;x<=N;x++){
+  for (let y=-1;y<=NH;y++) for (let x=-1;x<=NW;x++){
     if (filled(x,y)) continue;
     if (filled(x+1,y)||filled(x-1,y)||filled(x,y+1)||filled(x,y-1)) g.fillRect(x+1,y+1,1,1);
   }
-  // 채색 + 명암 (위/왼쪽 밝게, 아래/오른쪽 어둡게)
-  for (let y=0;y<N;y++) for (let x=0;x<N;x++){
+  for (let y=0;y<NH;y++) for (let x=0;x<NW;x++){
     const ch=grid[y][x]; if (!ch) continue;
     const base=pal[ch]||'#ff00ff';
     let f=0;
-    if (!filled(x,y-1)) f+=0.22; else if (grid[y-1][x]!==ch) f+=0.08;
+    if (!filled(x,y-1)) f+=0.22; else if (grid[y-1][x]!==ch) f+=0.06;
     if (!filled(x-1,y)) f+=0.08;
-    if (!filled(x,y+1)) f-=0.28; else if (grid[y+1][x]!==ch) f-=0.1;
+    if (!filled(x,y+1)) f-=0.28; else if (grid[y+1][x]!==ch) f-=0.08;
     if (!filled(x+1,y)) f-=0.14;
-    g.fillStyle = (ch==='k') ? base : shadeHex(base, f);
+    g.fillStyle = (custom || ch==='k'||ch==='w'||ch==='c') ? base : shadeHex(base, f);
     g.fillRect(x+1,y+1,1,1);
   }
   return SPRITE_CACHE[key]=c;
@@ -1641,6 +1763,9 @@ function makeSprite(type, owner){
 const AUDIO = (()=>{
   let ac=null, master=null, musicBus=null, sfxBus=null, noiseBuf=null;
   let track=null, step=0, nextTime=0, timer=null, musicOn=true, sfxOn=true, vol=0.7;
+  let musicVol=0.7, sfxVol=0.8;
+  try { const sv=JSON.parse(localStorage.getItem('rc2vol')||'null'); if (sv){ musicVol=sv.m; sfxVol=sv.s; } } catch(e){}
+  const saveVol=()=>{ try { localStorage.setItem('rc2vol',JSON.stringify({m:musicVol,s:sfxVol})); } catch(e){} };
   const NOTE={C:0,'C#':1,D:2,'D#':3,E:4,F:5,'F#':6,G:7,'G#':8,A:9,'A#':10,B:11};
   const fr=n=>{ const m=n.match(/^([A-G]#?)(\d)$/); return 440*Math.pow(2,(NOTE[m[1]]+(+m[2]+1)*12-69)/12); };
 
@@ -1650,8 +1775,8 @@ const AUDIO = (()=>{
     master=ac.createGain(); master.gain.value=vol;
     const comp=ac.createDynamicsCompressor(); comp.threshold.value=-14; comp.ratio.value=4;
     master.connect(comp); comp.connect(ac.destination);
-    musicBus=ac.createGain(); musicBus.gain.value=0.55; musicBus.connect(master);
-    sfxBus=ac.createGain(); sfxBus.gain.value=0.8; sfxBus.connect(master);
+    musicBus=ac.createGain(); musicBus.gain.value=0.8*musicVol; musicBus.connect(master);
+    sfxBus=ac.createGain(); sfxBus.gain.value=sfxVol; sfxBus.connect(master);
     noiseBuf=ac.createBuffer(1,ac.sampleRate,ac.sampleRate);
     const d=noiseBuf.getChannelData(0); for (let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
     return true;
@@ -1790,6 +1915,9 @@ const AUDIO = (()=>{
     init, play, sfx,
     setMusic(on){ musicOn=on; }, setSfx(on){ sfxOn=on; },
     setVol(v){ vol=v; if (master) master.gain.value=v; },
+    setMusicVol(v){ musicVol=v; if (musicBus) musicBus.gain.setTargetAtTime(0.8*v,ac.currentTime,0.03); saveVol(); },
+    setSfxVol(v){ sfxVol=v; if (sfxBus) sfxBus.gain.setTargetAtTime(v,ac.currentTime,0.03); saveVol(); },
+    get musicVol(){ return musicVol; }, get sfxVol(){ return sfxVol; },
     get musicOn(){ return musicOn; }, get sfxOn(){ return sfxOn; }, get track(){ return track; },
   };
 })();
@@ -1809,7 +1937,7 @@ function sprURL(t,o){ const k=t+o; return SPR_URL[k]||(SPR_URL[k]=makeSprite(t,o
 const sprImg = (t,o,cls='')=>`<img class="spr ${cls}" src="${sprURL(t,o)}" alt="">`;
 
 const APP = { mode:'ai', screen:'lobby', drafts:[null,null], audio:false };
-let S=null, BOARD=null, ver=0, dpr=1;
+let S=null, BOARD=null, BOARD_F=null, ver=0, dpr=1;
 
 // ================= 화면 전환 =================
 function show(scr){
@@ -1819,6 +1947,15 @@ function show(scr){
   if (APP.audio) AUDIO.play(scr==='game'?'battle':'lobby');
 }
 window.addEventListener('pointerdown',()=>{ if (!APP.audio){ APP.audio=true; AUDIO.init(); AUDIO.play(APP.screen==='game'?'battle':'lobby'); refreshAudioBtns(); } },{capture:true});
+function refreshVol(){
+  document.querySelectorAll('.bgmVol').forEach(el=>{ el.value=Math.round(AUDIO.musicVol*100); el.nextElementSibling.textContent=el.value; });
+  document.querySelectorAll('.sfxVol').forEach(el=>{ el.value=Math.round(AUDIO.sfxVol*100); el.nextElementSibling.textContent=el.value; });
+}
+document.addEventListener('input',e=>{
+  if (e.target.classList.contains('bgmVol')){ AUDIO.setMusicVol(e.target.value/100); if (+e.target.value>0 && !AUDIO.musicOn){ AUDIO.setMusic(true); refreshAudioBtns(); } refreshVol(); }
+  if (e.target.classList.contains('sfxVol')){ AUDIO.setSfxVol(e.target.value/100); refreshVol(); }
+});
+document.addEventListener('change',e=>{ if (e.target.classList.contains('sfxVol')) AUDIO.sfx('select'); });
 function refreshAudioBtns(){
   document.querySelectorAll('.bgmBtn').forEach(b=>{ b.classList.toggle('off',!AUDIO.musicOn); b.textContent=AUDIO.musicOn?'♫ BGM':'♫ BGM 끔'; });
   document.querySelectorAll('.sfxBtn').forEach(b=>{ b.classList.toggle('off',!AUDIO.sfxOn); b.textContent=AUDIO.sfxOn?'🔊 효과음':'🔇 효과음'; });
@@ -1863,7 +2000,7 @@ function treeNode(t,side){
     ch.length?`<div class="tch">${ch.map(c=>`<div class="tbranch"><span class="tedge">${c.label}</span>${treeNode(c.to,side)}</div>`).join('')}</div>`:''}</div>`;
 }
 const FORMS = [
-  {n:'룬 마름모',k:'소환진',g:['.G.','G*G','.G.'],d:'수호병 4기가 빈칸을 상하좌우로 감싸면 룬 골렘 소환 + 주변 적 기절'},
+  {n:'룬 마름모',k:'소환진',g:['.G.','G*G','.G.'],d:'포네도란 4기가 빈칸을 상하좌우로 감싸면 머슬도란 소환 + 주변 적 기절'},
   {n:'쌍둥이 결속',k:'융합',g:['TT'],d:'쌍둥이 검사 2기가 맞닿으면 쌍검 영웅 (턴당 2회 행동)'},
   {n:'숲의 각성',k:'성장',g:['DS'],d:'드루이드가 묘목과 맞닿으면 즉시 고대 나무로 성장'},
   {n:'폭풍 화살',k:'연계',g:['A..','.A.','..A'],d:'궁수 계열 3기 대각선 일렬 → 대각선 양쪽 6칸 관통 사격'},
@@ -1874,7 +2011,7 @@ const FORMS = [
   {n:'공명 회로',k:'지속',g:['X.S.X'],d:'공명탑의 같은 줄·열 3칸 안 아군 2기 이상 → 사거리 +1'},
 ];
 function formsHTML(){
-  const L={G:'수',T:'쌍',A:'궁',P:'사',S:'탑',X:'아',D:'드',M:'마',W:'늑',B:'방','*':'★','.':''};
+  const L={G:'포',T:'쌍',A:'궁',P:'사',S:'탑',X:'아',D:'드',M:'마',W:'늑',B:'방','*':'★','.':''};
   return FORMS.map(f=>`<div class="form"><div class="mini" style="grid-template-columns:repeat(${f.g[0].length},15px)">${
     f.g.join('').split('').map(ch=>`<span class="m${ch==='.'?' e':ch==='*'?' s':''}">${L[ch]}</span>`).join('')
   }</div><div><b>${f.n}</b> <span class="kind">${f.k}</span><br><small>${f.d}</small></div></div>`).join('');
@@ -1948,12 +2085,14 @@ $('draftGo').onclick=()=>{
 // ================= 온라인 (room capability) =================
 const NET = { lobby:null, r:null, code:null, side:-1, myArmy:null, ready:false, myActs:[], opp:null, oppAll:[], applied:0, started:false, pumping:false, unsub:null, oppSeen:false, avail:null };
 // 자체 서버(WebSocket)용 room 구현 — claude.ai의 room과 같은 모양(join/presence/onPeers/leave)
+const TAB_ID = (()=>{ try { let v=sessionStorage.getItem('rc2tab'); if(!v){ v='t'+Math.random().toString(36).slice(2,10); sessionStorage.setItem('rc2tab',v);} return v; } catch(e){ return 't'+Math.random().toString(36).slice(2,10); } })();
 function wsLobby(){
   const url=(location.protocol==='https:'?'wss://':'ws://')+location.host+'/ws';
   return {
     probe(){ return new Promise(res=>{ let done=false; try { const ws=new WebSocket(url);
       ws.onopen=()=>{ done=true; ws.close(); res(true); }; ws.onerror=()=>{ if(!done) res(false); };
       setTimeout(()=>{ if(!done){ try{ws.close();}catch(e){} res(false);} },4000); } catch(e){ res(false); } }); },
+    isWs:true,
     join(name){
       return new Promise((resolve,reject)=>{
         let ws=null, me=null, mine={}, peers=[], left=false, first=true;
@@ -1967,7 +2106,7 @@ function wsLobby(){
           emit:async()=>{}, on:()=>()=>{} };
         const connect=()=>{
           ws=new WebSocket(url);
-          ws.onopen=()=>ws.send(JSON.stringify({t:'join',room:name,presence:mine}));
+          ws.onopen=()=>ws.send(JSON.stringify({t:'join',room:name,presence:mine,cid:TAB_ID}));
           ws.onmessage=e=>{ let d; try{ d=JSON.parse(e.data); }catch(_){ return; }
             if (d.t==='joined'){ me=d.id; if (first){ first=false; resolve(api); } }
             if (d.t==='error' && first){ first=false; reject(new Error(d.message||'join failed')); }
@@ -2000,9 +2139,9 @@ async function onlineJoin(code,side){
   const lobby=await getLobby();
   if (!lobby){ $('netMsg').textContent='온라인 서버에 연결할 수 없어요'; return; }
   try { NET.r=await lobby.join(code); } catch(e){ $('netMsg').textContent='방에 들어갈 수 없어요 ('+(e.code||e.message)+')'; return; }
-  Object.assign(NET,{code,side,myArmy:null,ready:false,myActs:[],opp:null,oppAll:[],applied:0,started:false,oppSeen:false});
+  Object.assign(NET,{code,side,myArmy:null,ready:false,myActs:[],opp:null,oppAll:[],applied:0,started:false,oppSeen:false,pumping:false,desyncWarned:false});
   // 새로고침 후 복구
-  try { const sv=JSON.parse(localStorage.getItem('rc2:'+code)||'null'); if (sv && sv.side===side){ NET.myArmy=sv.army; NET.ready=!!sv.army; NET.myActs=sv.acts||[]; } } catch(e){}
+  try { const sv=JSON.parse(localStorage.getItem('rc2:'+code+':'+side)||'null'); if (sv && sv.side===side){ NET.myArmy=sv.army; NET.ready=!!sv.army; NET.myActs=sv.acts||[]; } } catch(e){}
   NET.unsub=NET.r.onPeers(ch=>netOnPeers(ch.peers));
   APP.mode='online';
   netPush();
@@ -2010,29 +2149,48 @@ async function onlineJoin(code,side){
   if (NET.myArmy){ DRAFT.army=[...NET.myArmy]; DRAFT.locked=true; renderDraft(); }
   AUDIO.sfx('turn');
 }
-function netSave(){ try { localStorage.setItem('rc2:'+NET.code, JSON.stringify({side:NET.side,army:NET.myArmy,acts:NET.myActs})); } catch(e){} }
+function netSave(){ try { localStorage.setItem('rc2:'+NET.code+':'+NET.side, JSON.stringify({side:NET.side,army:NET.myArmy,acts:NET.myActs})); } catch(e){} }
+function stateHash(st){
+  if (!st) return 0;
+  let str=st.turn+'|'+st.turnNo+'|'+st.ap+'|'+st.mana.join(',')+'|'+(st.cl||0)+'|';
+  for (const p of [...st.pieces].sort((a,b)=>a.id-b.id)) str+=p.id+p.type+p.owner+','+p.x+','+p.y+','+p.shield+p.frozen+p.stun+p.root+p.poison+';';
+  let h=2166136261; for (let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619); } return h>>>0;
+}
 function netPush(){
   if (!NET.r) return;
   let acts=NET.myActs, o=0;
-  while (acts.join(';').length>3000){ acts=acts.slice(20); o+=20; }
-  NET.r.presence({ app:'rc2', side:NET.side, army:NET.myArmy, ready:NET.ready, o, acts:acts.join(';'), n:NET.myActs.length }).catch(()=>{});
+  const limit = NET.lobby && NET.lobby.isWs ? 40000 : 3000;
+  while (acts.join(';').length>limit){ acts=acts.slice(20); o+=20; }
+  const k = NET.started ? NET.myActs.length+NET.applied : -1;
+  NET.r.presence({ app:'rc2', side:NET.side, army:NET.myArmy, ready:NET.ready, o, acts:acts.join(';'), n:NET.myActs.length, k, h:NET.started?stateHash(S):0 }).catch(()=>{});
 }
 function validArmy(a){ return Array.isArray(a) && a.length && a.length<=MAX_PIECES && a.every(t=>typeof t==='string'&&DRAFTABLE.includes(t)) && armyCost(a)<=BUDGET; }
 function netOnPeers(peers){
   const cand=peers.filter(p=>!(p.isMe&&p.sameTab) && p.presence && p.presence.app==='rc2' && p.presence.side===1-NET.side);
   const prev=NET.opp;
+  // 같은 상대의 이전 연결이 남아 있을 수 있으므로 기록이 가장 긴 쪽을 상대로 본다
+  const score=c=>(c.presence.ready&&validArmy(c.presence.army)?1e6:0)+(+c.presence.n||0)*10+(c.updatedAt||0)/1e13;
+  cand.sort((a,b)=>score(b)-score(a));
   NET.opp = cand[0] || null;
-  if (NET.opp){
-    NET.oppSeen=true;
-    const pr=NET.opp.presence, o=+pr.o||0;
+  for (const c of cand){
+    const pr=c.presence, o=+pr.o||0;
     const list = typeof pr.acts==='string' && pr.acts ? pr.acts.split(';') : [];
-    // 상대가 새로고침으로 기록을 잃은 경우(n 감소)는 무시하고 기존 기록 유지
-    list.forEach((c,i)=>{ NET.oppAll[o+i]=c; });
+    list.forEach((code,i)=>{ if (NET.oppAll[o+i]==null) NET.oppAll[o+i]=code; });
   }
+  if (NET.opp) NET.oppSeen=true;
   if (!!prev !== !!NET.opp && APP.screen==='game') log(NET.opp?'상대가 연결되었습니다':'⚠ 상대 연결이 끊겼습니다 (재접속 대기)','#ffb84d');
   if (APP.screen==='draft') renderDraft();
   if (APP.screen==='game') refreshHUD();
-  netCheckStart(); netPump();
+  netCheckStart(); netPump(); netVerify();
+}
+// 두 화면의 판이 같은지 확인: 같은 지점(k)에서 해시가 다르면 기록으로부터 다시 계산
+function netVerify(){
+  if (!NET.started || !NET.opp || NET.pumping || !S) return;
+  const pr=NET.opp.presence, myK=NET.myActs.length+NET.applied;
+  if (+pr.k!==myK || !pr.h) return;
+  if ((+pr.h>>>0)===stateHash(S)){ NET.desyncWarned=false; return; }
+  netResync('상대 화면과 판이 달라서 다시 맞췄습니다');
+  if ((+pr.h>>>0)!==stateHash(S) && !NET.desyncWarned){ NET.desyncWarned=true; log('⚠ 동기화 확인 중… 상대의 기록을 기다리는 중입니다','#ffb84d'); }
 }
 function netStatusHTML(){
   const opp=NET.opp?.presence;
@@ -2046,24 +2204,36 @@ function netCheckStart(){
   const pr=NET.opp.presence;
   if (!pr.ready || !validArmy(pr.army)) return;
   NET.started=true;
-  const armies = NET.side===0 ? [NET.myArmy, pr.army] : [pr.army, NET.myArmy];
-  APP.drafts=armies;
-  // 결정론적 재생: 저장된 양측 기록을 순서대로 적용
-  S=newState(armies[0],armies[1]); startTurn(S,[]);
-  let mi=0, oi=0;
-  for (let guard=0; guard<5000 && S.winner<0; guard++){
-    const mine=S.turn===NET.side, list=mine?NET.myActs:NET.oppAll, idx=mine?mi:oi;
-    if (idx>=list.length || list[idx]==null) break;
-    const code=list[idx];
-    if (mine) mi++; else oi++;
-    if (code==='E'){ endTurn(S,[]); continue; }
-    const a=decodeAndFind(S,code); if (!a) break;
-    apply(S,a,[]);
-  }
-  NET.applied=oi;
+  APP.drafts = NET.side===0 ? [NET.myArmy, pr.army] : [pr.army, NET.myArmy];
+  const r=replayState(); S=r.S; NET.applied=r.oi;
   enterGame();
   log(`온라인 대전 시작 — 당신은 ${OWN[NET.side].full}`,'#ffd35c');
-  netPump();
+  netPush(); netPump();
+}
+// 양쪽 기록을 차례대로 적용해 판을 처음부터 다시 만든다 (엔진이 결정론적이라 같은 기록 → 같은 판)
+function replayState(){
+  const st=newState(APP.drafts[0],APP.drafts[1]); startTurn(st,[]);
+  let mi=0, oi=0;
+  for (let guard=0; guard<20000 && st.winner<0; guard++){
+    const mine=st.turn===NET.side, list=mine?NET.myActs:NET.oppAll, idx=mine?mi:oi;
+    if (idx>=list.length || list[idx]==null) break;
+    const code=list[idx];
+    if (code==='E'){ endTurn(st,[]); if (mine) mi++; else oi++; continue; }
+    const a=decodeAndFind(st,code);
+    if (!a){ console.warn('replay: cannot apply',code); break; }
+    if (mine) mi++; else oi++;
+    apply(st,a,[]);
+  }
+  return {S:st, mi, oi};
+}
+function netResync(msg){
+  const r=replayState();
+  if (stateHash(r.S)===stateHash(S) && NET.applied===r.oi) return false;
+  S=r.S; NET.applied=r.oi; ver++; deselect(); refreshHUD();
+  if (msg) log('↻ '+msg,'#7fd1ff');
+  netPush();
+  if (S.winner>=0) setTimeout(showWin,500);
+  return true;
 }
 function netPump(){
   if (NET.pumping || !NET.started || APP.mode!=='online' || !S || S.winner>=0) return;
@@ -2074,11 +2244,13 @@ function netPump(){
   if (code==='E') endTurnUI(true);
   else {
     const a=decodeAndFind(S,code);
-    if (!a){ log('⚠ 동기화 오류: 상대 행동을 재현할 수 없습니다','#ff5d6c'); }
-    else { const ev=[]; apply(S,a,ev); ver++; processEvents(ev); refreshHUD(); if (S.winner>=0) setTimeout(showWin,700); }
+    if (!a){ NET.applied--; NET.pumping=false; netResync('기록을 다시 읽어 판을 맞췄습니다'); return; }
+    const ev=[]; apply(S,a,ev); ver++; processEvents(ev); refreshHUD(); if (S.winner>=0) setTimeout(showWin,700);
   }
-  setTimeout(()=>{ NET.pumping=false; netPump(); },600);
+  netPush();
+  setTimeout(()=>{ NET.pumping=false; netPump(); netVerify(); },600);
 }
+setInterval(()=>{ if (APP.mode==='online' && NET.started && !NET.pumping && !ui.pending && S){ const r=replayState(); if (stateHash(r.S)!==stateHash(S)){ S=r.S; NET.applied=r.oi; ver++; refreshHUD(); log('↻ 판을 기록과 다시 맞췄습니다','#7fd1ff'); netPush(); } } },4000);
 function netLeave(){
   try { NET.unsub&&NET.unsub(); NET.r&&NET.r.leave(); } catch(e){}
   NET.r=null; NET.started=false;
@@ -2097,6 +2269,7 @@ function enterGame(){
   logLines=[]; renderLog(); ui.pending=false; clearTimeout(ui.aiTimer);
   $('win').style.display='none';
   view.zoom=1; view.panX=0; view.panY=0;
+  FLIP = APP.mode==='online' && NET.side===1;
   show('game'); deselect(); refreshHUD();
   $('modeTag').textContent = APP.mode==='ai'?'vs AI':APP.mode==='local'?'2인 (한 화면)':`온라인 · 방 ${NET.code}`;
 }
@@ -2106,7 +2279,9 @@ const ui={ sel:null, acts:[], inspect:[], preview:new Map(), targeting:null, hov
 const vis=new Map();
 const FX={parts:[],rings:[],beams:[],texts:[]};
 let shake=0, banner=null, logLines=[];
-const cx=x=>(x+.5)*TS, cy=y=>(y+.5)*TS;
+let FLIP=false; // 온라인 홍염 진영은 판을 뒤집어서 내 군단이 아래에 오게 표시
+const px=x=>(FLIP?W-1-x:x)*TS, py=y=>(FLIP?H-1-y:y)*TS;
+const cx=x=>px(x)+TS/2, cy=y=>py(y)+TS/2;
 
 function isHumanTurn(){
   if (!S || S.winner>=0 || ui.pending) return false;
@@ -2151,7 +2326,7 @@ function processEvents(ev){
       case 'poison': beam(e.fx,e.fy,e.x,e.y,'#7be35a',3,.4); burst(e.x,e.y,'#7be35a',16,80); ftext(e.x,e.y,'맹독','#7be35a',15); want('magic'); break;
       case 'poisondie': ftext(e.x,e.y,'독으로 쓰러짐','#7be35a',14); break;
       case 'root': beam(e.fx,e.fy,e.x,e.y,'#6fd36a',3,.4); ftext(e.x,e.y,'속박','#6fd36a',14); want('magic'); break;
-      case 'raise': ring(e.x,e.y,'#d8cfb0',44,.7,4); burst(e.x,e.y,'#8a58d6',24,120); ftext(e.x,e.y,'망자 기상','#d8cfb0',15); want('summon'); log(`☠ <b style="color:${oc}">${on}</b> 해골 병사를 일으킴`); break;
+      case 'raise': ring(e.x,e.y,'#d8cfb0',44,.7,4); burst(e.x,e.y,'#8a58d6',24,120); ftext(e.x,e.y,'망자 기상','#d8cfb0',15); want('summon'); log(`☠ <b style="color:${oc}">${on}</b> 겔드워기를 일으킴`); break;
       case 'revive': beam(e.fx,e.fy,e.x,e.y,'#fff3b0',4,.7); ring(e.x,e.y,'#fff3b0',60,.9,5); burst(e.x,e.y,'#fff3b0',30,140); ftext(e.x,e.y,`부활: ${e.name}`,'#fff3b0',16); want('evolve'); log(`✝ <b style="color:${oc}">${on}</b> ${e.name} 부활`,'#fff3b0'); break;
       case 'build': ring(e.x,e.y,'#ffd35c',40,.6,4); burst(e.x,e.y,'#ffd35c',16,100); ftext(e.x,e.y,'포탑 설치','#ffd35c',14); want('summon'); break;
       case 'evolve': ring(e.x,e.y,'#ffffff',60,.9,5); ring(e.x,e.y,oc,40,.7,4); burst(e.x,e.y,'#ffffff',30,160); ftext(e.x,e.y,`진화! ${e.name}`,'#ffffff',18); want('evolve');
@@ -2207,11 +2382,13 @@ function computeView(){
 }
 function cellAt(e){
   const r=cv.getBoundingClientRect();
-  const px=(e.clientX-r.left)*dpr, py=(e.clientY-r.top)*dpr;
-  const x=Math.floor((px-view.ox)/view.scale/TS), y=Math.floor((py-view.oy)/view.scale/TS);
+  const qx=(e.clientX-r.left)*dpr, qy=(e.clientY-r.top)*dpr;
+  let x=Math.floor((qx-view.ox)/view.scale/TS), y=Math.floor((qy-view.oy)/view.scale/TS);
+  if (FLIP){ x=W-1-x; y=H-1-y; }
   return inB(x,y)?{x,y}:null;
 }
-function buildBoard(){
+function buildBoard(flip){
+  const bx=x=>(flip?W-1-x:x)*TS, by=y=>(flip?H-1-y:y)*TS;
   const c=document.createElement('canvas'); c.width=W*TS; c.height=H*TS;
   const g=c.getContext('2d'); let seed=11;
   const rnd=()=>{ seed=(seed*16807)%2147483647; return seed/2147483647; };
@@ -2219,27 +2396,27 @@ function buildBoard(){
   for (let y=0;y<H;y++) for (let x=0;x<W;x++){
     const light=((x+y)&1)===0;
     g.fillStyle = light ? '#5a6080' : '#262a40';
-    g.fillRect(x*TS,y*TS,TS,TS);
-    if (y<=1){ g.fillStyle='rgba(255,80,100,.08)'; g.fillRect(x*TS,y*TS,TS,TS); }
-    if (y>=H-2){ g.fillStyle='rgba(80,150,255,.08)'; g.fillRect(x*TS,y*TS,TS,TS); }
+    g.fillRect(bx(x),by(y),TS,TS);
+    if (y<=1){ g.fillStyle='rgba(255,80,100,.08)'; g.fillRect(bx(x),by(y),TS,TS); }
+    if (y>=H-2){ g.fillStyle='rgba(80,150,255,.08)'; g.fillRect(bx(x),by(y),TS,TS); }
     for (let i=0;i<7;i++){
       g.fillStyle = rnd()<.5 ? (light?'rgba(255,255,255,.06)':'rgba(255,255,255,.03)') : 'rgba(0,0,0,.14)';
-      g.fillRect(x*TS+Math.floor(rnd()*12)*u, y*TS+Math.floor(rnd()*12)*u, u, u);
+      g.fillRect(bx(x)+Math.floor(rnd()*12)*u, by(y)+Math.floor(rnd()*12)*u, u, u);
     }
     g.fillStyle = light ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.04)';
-    g.fillRect(x*TS,y*TS,TS,2); g.fillRect(x*TS,y*TS,2,TS);
-    g.fillStyle='rgba(0,0,0,.3)'; g.fillRect(x*TS,y*TS+TS-2,TS,2); g.fillRect(x*TS+TS-2,y*TS,2,TS);
+    g.fillRect(bx(x),by(y),TS,2); g.fillRect(bx(x),by(y),2,TS);
+    g.fillStyle='rgba(0,0,0,.3)'; g.fillRect(bx(x),by(y)+TS-2,TS,2); g.fillRect(bx(x)+TS-2,by(y),2,TS);
   }
   const ROCK=["............","....kkkk....","..kkbbbbkk..",".kbbllbbbbk.",".kbllbbbbbk.","kbblbbbbdbbk","kbbbbbbddbbk","kbbbbbdddbbk",".kbbbbbbbdk.",".kddbbbbddk.","..kkddddkk..","....kkkk...."];
   const RC={k:'#07080c',b:'#4b5068',l:'#7a809c',d:'#33374a'};
   for (let y=0;y<H;y++) for (let x=0;x<W;x++) if (rock(x,y)){
-    g.fillStyle='rgba(0,0,0,.35)'; g.fillRect(x*TS+4,y*TS+TS-10,TS-8,6);
-    ROCK.forEach((r,yy)=>{ for (let xx=0;xx<12;xx++){ const ch=r[xx]; if (ch==='.') continue; g.fillStyle=RC[ch]; g.fillRect(x*TS+xx*u,y*TS+yy*u,u,u);} });
+    g.fillStyle='rgba(0,0,0,.35)'; g.fillRect(bx(x)+4,by(y)+TS-10,TS-8,6);
+    ROCK.forEach((r,yy)=>{ for (let xx=0;xx<12;xx++){ const ch=r[xx]; if (ch==='.') continue; g.fillStyle=RC[ch]; g.fillRect(bx(x)+xx*u,by(y)+yy*u,u,u);} });
   }
   // 좌표
   g.font='10px monospace'; g.fillStyle='rgba(255,255,255,.25)';
-  for (let x=0;x<W;x++) g.fillText(String.fromCharCode(65+x),x*TS+3,H*TS-4);
-  for (let y=0;y<H;y++) g.fillText(String(H-y),3,y*TS+11);
+  for (let x=0;x<W;x++) g.fillText(String.fromCharCode(65+x),bx(x)+3,by(flip?0:H-1)+TS-4);
+  for (let y=0;y<H;y++) g.fillText(String(H-y),bx(flip?W-1:0)+3,by(y)+11);
   return c;
 }
 let cacheVer=-1, cHints=[], cThreat=null;
@@ -2262,16 +2439,16 @@ function frame(now){
   ctx.fillStyle='#0b0d18'; ctx.fillRect(-16,-16,W*TS+32,H*TS+32);
   ctx.strokeStyle='#8a7440'; ctx.lineWidth=4; ctx.strokeRect(-9,-9,W*TS+18,H*TS+18);
   ctx.strokeStyle=OWN[S.turn].col; ctx.globalAlpha=.6; ctx.lineWidth=2; ctx.strokeRect(-14,-14,W*TS+28,H*TS+28); ctx.globalAlpha=1;
-  ctx.drawImage(BOARD,0,0);
+  ctx.drawImage(FLIP?BOARD_F:BOARD,0,0);
   // 붕괴 지역
   if (S.cl>0){
     for (let y=0;y<H;y++) for (let x=0;x<W;x++) if (ringOf(x,y)<S.cl){
-      ctx.fillStyle='#030306'; ctx.fillRect(x*TS,y*TS,TS,TS);
-      ctx.fillStyle=`rgba(255,90,60,${.08+.06*Math.sin(now/300+x+y)})`; ctx.fillRect(x*TS,y*TS,TS,TS);
+      ctx.fillStyle='#030306'; ctx.fillRect(px(x),py(y),TS,TS);
+      ctx.fillStyle=`rgba(255,90,60,${.08+.06*Math.sin(now/300+x+y)})`; ctx.fillRect(px(x),py(y),TS,TS);
     }
   }
   // 무덤
-  for (const g of S.graves){ if (S.occ[g.y*W+g.x]) continue; const X=g.x*TS+TS/2, Y=g.y*TS+TS/2;
+  for (const g of S.graves){ if (S.occ[g.y*W+g.x]) continue; const X=cx(g.x), Y=cy(g.y);
     ctx.fillStyle='rgba(0,0,0,.4)'; ctx.fillRect(X-9,Y+8,18,4);
     ctx.fillStyle='#8b8fa3'; ctx.fillRect(X-7,Y-6,14,15); ctx.fillRect(X-5,Y-9,10,3);
     ctx.fillStyle='#5d6175'; ctx.fillRect(X-1,Y-4,2,8); ctx.fillRect(X-4,Y-2,8,2);
@@ -2289,7 +2466,7 @@ function frame(now){
   if (ui.threat){
     if (!cThreat) cThreat=attackCells(S,1-S.turn);
     ctx.fillStyle='rgba(255,50,70,.22)';
-    for (const i of cThreat) ctx.fillRect((i%W)*TS+3,Math.floor(i/W)*TS+3,TS-6,TS-6);
+    for (const i of cThreat) ctx.fillRect(px(i%W)+3,py(Math.floor(i/W))+3,TS-6,TS-6);
   }
   ctx.lineWidth=3;
   for (const [x1,y1,x2,y2,o] of (S._resLines||[])){
@@ -2302,21 +2479,21 @@ function frame(now){
     const col=OWN[h.o].col;
     ctx.save(); ctx.globalAlpha=.35+.4*pulse; ctx.strokeStyle=col; ctx.lineWidth=3; ctx.setLineDash([6,5]);
     ctx.font='bold 16px "Do Hyeon"'; ctx.textAlign='center'; ctx.fillStyle=col;
-    if (h.k==='diamond'){ ctx.beginPath(); ctx.arc(cx(h.x),cy(h.y),TS*.4,0,7); ctx.stroke(); ctx.strokeRect(h.mx*TS+7,h.my*TS+7,TS-14,TS-14); ctx.fillText('?',cx(h.mx),cy(h.my)+6); ctx.fillText('★',cx(h.x),cy(h.y)+5); }
-    else { ctx.strokeRect(h.x*TS+7,h.y*TS+7,TS-14,TS-14); ctx.fillText('➶',cx(h.x),cy(h.y)+6); }
+    if (h.k==='diamond'){ ctx.beginPath(); ctx.arc(cx(h.x),cy(h.y),TS*.4,0,7); ctx.stroke(); ctx.strokeRect(px(h.mx)+7,py(h.my)+7,TS-14,TS-14); ctx.fillText('?',cx(h.mx),cy(h.my)+6); ctx.fillText('★',cx(h.x),cy(h.y)+5); }
+    else { ctx.strokeRect(px(h.x)+7,py(h.y)+7,TS-14,TS-14); ctx.fillText('➶',cx(h.x),cy(h.y)+6); }
     ctx.restore();
   }
   const selP = ui.sel!=null ? S.byId.get(ui.sel) : null;
   if (selP){
     if (ui.targeting){
-      for (const a of ui.targeting.list){ ctx.fillStyle='rgba(181,140,255,'+(.25+.2*pulse)+')'; ctx.fillRect(a.x*TS+3,a.y*TS+3,TS-6,TS-6); ctx.strokeStyle='#d0b4ff'; ctx.lineWidth=2; ctx.strokeRect(a.x*TS+3,a.y*TS+3,TS-6,TS-6); }
-      if (ui.hover && ['fireball'].includes(ui.targeting.ab) && ui.targeting.list.some(a=>a.x===ui.hover.x&&a.y===ui.hover.y)){ ctx.strokeStyle='#ff8a2a'; ctx.lineWidth=3; ctx.strokeRect((ui.hover.x-1)*TS+2,(ui.hover.y-1)*TS+2,TS*3-4,TS*3-4); }
-      if (ui.hover && ui.targeting.ab==='hurl' && ui.targeting.list.some(a=>a.x===ui.hover.x&&a.y===ui.hover.y)){ ctx.fillStyle='rgba(255,180,80,.3)'; for (const [dx,dy] of [[0,0],...ORTH]) ctx.fillRect((ui.hover.x+dx)*TS+3,(ui.hover.y+dy)*TS+3,TS-6,TS-6); }
+      for (const a of ui.targeting.list){ ctx.fillStyle='rgba(181,140,255,'+(.25+.2*pulse)+')'; ctx.fillRect(px(a.x)+3,py(a.y)+3,TS-6,TS-6); ctx.strokeStyle='#d0b4ff'; ctx.lineWidth=2; ctx.strokeRect(px(a.x)+3,py(a.y)+3,TS-6,TS-6); }
+      if (ui.hover && ['fireball'].includes(ui.targeting.ab) && ui.targeting.list.some(a=>a.x===ui.hover.x&&a.y===ui.hover.y)){ ctx.strokeStyle='#ff8a2a'; ctx.lineWidth=3; ctx.strokeRect(px(ui.hover.x)-TS+2,py(ui.hover.y)-TS+2,TS*3-4,TS*3-4); }
+      if (ui.hover && ui.targeting.ab==='hurl' && ui.targeting.list.some(a=>a.x===ui.hover.x&&a.y===ui.hover.y)){ ctx.fillStyle='rgba(255,180,80,.3)'; for (const [dx,dy] of [[0,0],...ORTH]) ctx.fillRect(px(ui.hover.x+dx)+3,py(ui.hover.y+dy)+3,TS-6,TS-6); }
     } else {
       const list=ui.acts.length?ui.acts:ui.inspect, enemyView=!ui.acts.length;
       for (const a of list){
         if (a.t==='abil'||a.t==='evolve') continue;
-        const X=a.x*TS, Y=a.y*TS;
+        const X=px(a.x), Y=py(a.y);
         if (a.t==='move'){
           ctx.fillStyle = enemyView?'rgba(255,120,120,.4)':(a.blink?'rgba(181,140,255,.7)':'rgba(140,220,255,.75)');
           ctx.beginPath(); ctx.arc(X+TS/2,Y+TS/2,7,0,7); ctx.fill();
@@ -2335,12 +2512,12 @@ function frame(now){
       for (const [key,lab] of ui.preview){
         if (!lab.big) continue;
         const [x,y]=key.split(',').map(Number);
-        ctx.strokeStyle='#ffd35c'; ctx.lineWidth=3; ctx.globalAlpha=.6+.4*pulse; ctx.strokeRect(x*TS+4,y*TS+4,TS-8,TS-8); ctx.globalAlpha=1;
-        ctx.fillStyle='#ffd35c'; ctx.font='bold 16px "Do Hyeon"'; ctx.textAlign='center'; ctx.fillText('⚡',x*TS+TS-10,y*TS+16);
+        ctx.strokeStyle='#ffd35c'; ctx.lineWidth=3; ctx.globalAlpha=.6+.4*pulse; ctx.strokeRect(px(x)+4,py(y)+4,TS-8,TS-8); ctx.globalAlpha=1;
+        ctx.fillStyle='#ffd35c'; ctx.font='bold 16px "Do Hyeon"'; ctx.textAlign='center'; ctx.fillText('⚡',px(x)+TS-10,py(y)+16);
       }
     }
   }
-  if (ui.hover){ ctx.strokeStyle='rgba(255,255,255,.6)'; ctx.lineWidth=2; ctx.strokeRect(ui.hover.x*TS+1,ui.hover.y*TS+1,TS-2,TS-2); }
+  if (ui.hover){ ctx.strokeStyle='rgba(255,255,255,.6)'; ctx.lineWidth=2; ctx.strokeRect(px(ui.hover.x)+1,py(ui.hover.y)+1,TS-2,TS-2); }
   // 기물
   const live=new Set();
   for (const p of S.pieces){
@@ -2447,8 +2624,9 @@ function summarize(ev){
 }
 function deselect(){ ui.sel=null; ui.acts=[]; ui.inspect=[]; ui.preview=new Map(); ui.targeting=null; refreshCard(); }
 function doAction(a){
-  if (APP.mode==='online'){ NET.myActs.push(encodeAction(a)); netSave(); netPush(); }
+  if (APP.mode==='online'){ NET.myActs.push(encodeAction(a)); netSave(); }
   const ev=[]; apply(S,a,ev); ver++;
+  if (APP.mode==='online') netPush();
   processEvents(ev);
   const p=S.byId.get(a.id);
   deselect();
@@ -2459,8 +2637,9 @@ function doAction(a){
 }
 function endTurnUI(fromNet){
   if (!S || S.winner>=0) return;
-  if (APP.mode==='online' && !fromNet){ if (S.turn!==NET.side) return; NET.myActs.push('E'); netSave(); netPush(); }
+  if (APP.mode==='online' && !fromNet){ if (S.turn!==NET.side) return; NET.myActs.push('E'); netSave(); }
   const ev=[]; endTurn(S,ev); ver++;
+  if (APP.mode==='online' && !fromNet) netPush();
   deselect(); processEvents(ev); refreshHUD();
   if (S.winner>=0){ setTimeout(showWin,700); return; }
   if (APP.mode==='ai' && S.turn===1) scheduleAI();
@@ -2508,10 +2687,10 @@ cv.addEventListener('pointerup',()=>{ drag=null; });
 cv.addEventListener('pointerleave',()=>{ ui.hover=null; tip.style.display='none'; });
 cv.addEventListener('wheel',e=>{
   e.preventDefault();
-  const r=cv.getBoundingClientRect(), px=(e.clientX-r.left)*dpr, py=(e.clientY-r.top)*dpr;
-  const wx=(px-view.ox)/view.scale, wy=(py-view.oy)/view.scale;
+  const r=cv.getBoundingClientRect(), qx=(e.clientX-r.left)*dpr, qy=(e.clientY-r.top)*dpr;
+  const wx=(qx-view.ox)/view.scale, wy=(qy-view.oy)/view.scale;
   view.zoom=Math.min(3.2,Math.max(.6,view.zoom*(e.deltaY<0?1.12:1/1.12)));
-  computeView(); view.panX+=px-(wx*view.scale+view.ox); view.panY+=py-(wy*view.scale+view.oy);
+  computeView(); view.panX+=qx-(wx*view.scale+view.ox); view.panY+=qy-(wy*view.scale+view.oy);
 },{passive:false});
 window.addEventListener('keydown',e=>{
   if (APP.screen!=='game' || e.target.tagName==='INPUT') return;
@@ -2619,7 +2798,7 @@ $('lobbyBtn').onclick=()=>{ $('win').style.display='none'; if (APP.mode==='onlin
 $('formList').innerHTML=formsHTML();
 
 new ResizeObserver(()=>{ if (APP.screen==='game') resize(); }).observe(stage);
-BOARD=buildBoard(); buildLobby(); refreshAudioBtns(); show('lobby');
+BOARD=buildBoard(false); BOARD_F=buildBoard(true); buildLobby(); refreshAudioBtns(); refreshVol(); show('lobby');
 requestAnimationFrame(frame);
 
 </script>
